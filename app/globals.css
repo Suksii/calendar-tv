@@ -3,12 +3,12 @@
 @theme {
   --color-brand: #1a2e4a;
 
-  --color-primary-50:  #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
+  --color-primary-50:  #450a0a;
+  --color-primary-100: #7f1d1d;
+  --color-primary-500: #ef4444;
+  --color-primary-600: #dc2626;
+  --color-primary-700: #b91c1c;
+  --color-primary-800: #991b1b;
 
   --color-danger-50:  #fef2f2;
   --color-danger-100: #fee2e2;

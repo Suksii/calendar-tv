@@ -14,7 +14,7 @@ export default function ShowCatalog({ shows: initial, isAdmin }: { shows: Show[]
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState>(null);
 
-  async function handleAdd(e: React.FormEvent) {
+  async function handleAdd(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!newTitle.trim()) return;
     setLoading(true);
@@ -52,30 +52,30 @@ export default function ShowCatalog({ shows: initial, isAdmin }: { shows: Show[]
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Naziv emisije (npr. Dnevnik 1)"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="flex-1 bg-transparent border border-zinc-600 text-zinc-100 placeholder-zinc-500 rounded px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-600 transition-all duration-200"
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-primary-600 hover:bg-primary-700 disabled:opacity-60 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors"
+              className="bg-linear-to-r from-red-600 via-red-700 to-red-600 hover:from-red-700 hover:via-red-800 hover:to-red-700 disabled:opacity-50 text-white font-semibold rounded px-5 py-2.5 text-sm transition-all duration-200 uppercase tracking-wider"
             >
               Dodaj
             </button>
           </form>
         )}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
           {shows.length === 0 ? (
-            <p className="text-gray-500 text-sm p-4">Nema emisija u katalogu.</p>
+            <p className="text-zinc-500 text-sm p-4">Nema emisija u katalogu.</p>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-zinc-800">
               {shows.map((show) => (
-                <li key={show.id} className="flex items-center justify-between px-4 py-3">
-                  <span className="text-sm text-gray-900">{show.title}</span>
+                <li key={show.id} className="flex items-center justify-between px-4 py-3 hover:bg-zinc-800/40 transition-colors">
+                  <span className="text-sm text-zinc-200">{show.title}</span>
                   {isAdmin && (
                     <button
                       onClick={() => setConfirm({ id: show.id, title: show.title })}
-                      className="text-xs text-danger-500 hover:text-danger-700 font-medium transition-colors"
+                      className="text-xs text-red-500 hover:text-red-400 font-medium transition-colors"
                     >
                       Obriši
                     </button>

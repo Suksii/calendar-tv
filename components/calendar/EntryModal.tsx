@@ -120,14 +120,14 @@ export default function EntryModal({ date, entry, shows, onClose, onSaved }: Pro
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div ref={ref} className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div ref={ref} className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="font-bold text-gray-900">
+          <h2 className="font-bold text-zinc-100">
             {entry ? 'Uredi termin' : 'Novi termin'}{' '}
-            <span className="font-normal text-gray-500 text-sm">— {date}</span>
+            <span className="font-normal text-zinc-500 text-sm">— {date}</span>
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+          <button onClick={onClose} className="text-zinc-500 hover:text-zinc-200 transition-colors">✕</button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -195,12 +195,12 @@ export default function EntryModal({ date, entry, shows, onClose, onSaved }: Pro
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-gray-700">Gosti</p>
+              <p className="text-sm font-medium text-zinc-400">Gosti</p>
               <Button type="button" variant="ghost" size="sm" onClick={() => append({ name: '' })}>
                 + Dodaj gosta
               </Button>
             </div>
-            {fields.length === 0 && <p className="text-sm text-gray-400 italic">Nema gostiju.</p>}
+            {fields.length === 0 && <p className="text-sm text-zinc-600 italic">Nema gostiju.</p>}
             <div className="space-y-2">
               {fields.map((field, i) => (
                 <div key={field.id} className="flex gap-2 items-center">
@@ -208,7 +208,7 @@ export default function EntryModal({ date, entry, shows, onClose, onSaved }: Pro
                     placeholder={`Gost ${i + 1}`}
                     {...register(`guests.${i}.name`)}
                   />
-                  <button type="button" onClick={() => remove(i)} className="text-gray-400 hover:text-danger-500 shrink-0 px-1">✕</button>
+                  <button type="button" onClick={() => remove(i)} className="text-zinc-500 hover:text-red-500 shrink-0 px-1 transition-colors">✕</button>
                 </div>
               ))}
             </div>

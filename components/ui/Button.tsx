@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "secondary" | "danger" | "ghost";
-type Size = "sm" | "md";
+type Variant = "primary" | "secondary" | "ghost" | "danger";
+type Size = "sm" | "md" | "lg";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
@@ -12,15 +12,20 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const variants: Record<Variant, string> = {
-  primary: "bg-primary-600 hover:bg-primary-700 text-white disabled:opacity-60",
-  secondary: "bg-white border border-gray-300 hover:bg-gray-50 text-gray-700",
-  danger: "bg-danger-600 hover:bg-danger-700 text-white disabled:opacity-60",
-  ghost: "text-primary-600 hover:text-primary-800",
+  primary:
+    "bg-linear-to-r from-red-600 via-red-700 to-red-600 hover:from-red-700 hover:via-red-800 hover:to-red-700 text-white shadow-lg disabled:opacity-50",
+  secondary:
+    "bg-transparent border border-zinc-600 text-zinc-300 hover:bg-zinc-800 hover:border-zinc-500 hover:text-zinc-100 disabled:opacity-50",
+  ghost:
+    "bg-transparent text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50 disabled:opacity-50",
+  danger:
+    "bg-linear-to-r from-red-700 to-red-600 hover:from-red-800 hover:to-red-700 text-white shadow-lg disabled:opacity-50",
 };
 
 const sizes: Record<Size, string> = {
   sm: "px-3 py-1.5 text-xs",
-  md: "px-4 py-2 text-sm",
+  md: "px-5 py-2.5 text-sm",
+  lg: "px-8 py-3 text-base",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -42,7 +47,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "flex items-center justify-center gap-2 font-medium rounded-lg transition-colors",
+          "relative inline-flex items-center justify-center gap-2 rounded font-semibold uppercase tracking-wider cursor-pointer border-0 focus:outline-none active:scale-95 transition-all duration-200 ease-in-out disabled:cursor-not-allowed overflow-hidden group",
           variants[variant],
           sizes[size],
           fullWidth && "w-full",
@@ -50,7 +55,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...props}
       >
-        {loading ? "Učitavanje..." : children}
+        <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-20 transition-opacity duration-200 pointer-events-none" />
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {loading ? "Učitavanje..." : children}
+        </span>
       </button>
     );
   },

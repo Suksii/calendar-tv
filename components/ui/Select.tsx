@@ -36,7 +36,6 @@ export default function Select({
 
   const selected = options.find((o) => o.value === value);
 
-  // Zatvori na klik izvan
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (containerRef.current && !e.composedPath().includes(containerRef.current)) {
@@ -47,7 +46,6 @@ export default function Select({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Scrollaj fokusirani element u vidljivo područje
   useEffect(() => {
     if (open && focusedIndex >= 0 && listRef.current) {
       const item = listRef.current.children[focusedIndex] as HTMLElement;
@@ -96,11 +94,11 @@ export default function Select({
       {label && (
         <label
           id={`${id}-label`}
-          className="block text-sm font-medium text-gray-700 mb-1"
+          className="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400 cursor-default"
           onClick={() => !disabled && setOpen((o) => !o)}
         >
           {label}
-          {required && <span className="text-danger-500 ml-0.5">*</span>}
+          {required && <span className="text-red-500 ml-0.5">*</span>}
         </label>
       )}
 
@@ -114,20 +112,22 @@ export default function Select({
         onKeyDown={handleKeyDown}
         onClick={() => !disabled && setOpen((o) => !o)}
         className={[
-          'relative flex items-center justify-between px-3 py-2 text-sm rounded-lg border cursor-pointer select-none transition-colors',
-          disabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : 'bg-white',
+          'relative flex items-center justify-between px-4 py-2.5 text-sm rounded border cursor-pointer select-none transition-all duration-200',
+          disabled
+            ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed border-zinc-800'
+            : 'bg-zinc-800/60',
           open
-            ? 'border-primary-500 ring-2 ring-primary-500'
+            ? 'border-red-600 ring-2 ring-red-500'
             : error
-            ? 'border-danger-400'
-            : 'border-gray-300 hover:border-gray-400',
+            ? 'border-red-500'
+            : 'border-zinc-600 hover:border-zinc-500',
         ].join(' ')}
       >
-        <span className={selected ? 'text-gray-900' : 'text-gray-400'}>
+        <span className={selected ? 'text-zinc-100' : 'text-zinc-500'}>
           {selected ? selected.label : placeholder}
         </span>
         <svg
-          className={`w-4 h-4 text-gray-400 shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
           fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -139,7 +139,7 @@ export default function Select({
             ref={listRef}
             role="listbox"
             aria-labelledby={label ? `${id}-label` : undefined}
-            className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto py-1"
+            className="absolute z-50 left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto py-1"
           >
             {options.map((option, i) => {
               const isSelected = option.value === value;
@@ -152,14 +152,14 @@ export default function Select({
                   onMouseEnter={() => setFocusedIndex(i)}
                   onMouseDown={(e) => { e.preventDefault(); handleSelect(option.value); }}
                   className={[
-                    'flex items-center justify-between px-3 py-2 cursor-pointer text-sm transition-colors',
-                    isFocused ? 'bg-primary-50 text-primary-700' : 'text-gray-800',
-                    isSelected && !isFocused ? 'bg-gray-50' : '',
+                    'flex items-center justify-between px-4 py-2 cursor-pointer text-sm transition-colors',
+                    isFocused ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-300',
+                    isSelected && !isFocused ? 'bg-zinc-800/50' : '',
                   ].join(' ')}
                 >
                   <span>{option.label}</span>
                   {isSelected && (
-                    <svg className="w-4 h-4 text-primary-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
@@ -170,7 +170,7 @@ export default function Select({
         )}
       </div>
 
-      {error && <p className="text-danger-500 text-xs mt-1">{error}</p>}
+      {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   );
 }

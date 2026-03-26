@@ -10,7 +10,7 @@ export default async function ShowsPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-gray-900 mb-6">Katalog emisija</h1>
+      <h1 className="text-xl font-bold text-zinc-100 mb-6">Katalog emisija</h1>
       <ShowCatalog shows={shows} isAdmin={session.role === 'admin'} />
     </div>
   );

@@ -1,40 +1,72 @@
-import { forwardRef } from 'react';
+import { forwardRef } from "react";
+import { cn } from "@/lib/cn";
+
+type Variant = "default" | "filled";
+type Size = "sm" | "md" | "lg";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
   error?: string;
   required?: boolean;
+  variant?: Variant;
+  size?: Size;
+};
+
+const variants: Record<Variant, string> = {
+  default: "bg-transparent border-zinc-600 focus:border-red-600 focus:ring-red-500",
+  filled: "bg-zinc-800/60 border-zinc-700 focus:border-red-600 focus:ring-red-500",
+};
+
+const sizes: Record<Size, string> = {
+  sm: "px-3 py-2 text-xs",
+  md: "px-4 py-2.5 text-sm",
+  lg: "px-4 py-3 text-base",
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, required, className = '', id, ...props }, ref) => {
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-');
+  (
+    {
+      label,
+      error,
+      required,
+      variant = "default",
+      size = "md",
+      id,
+      className,
+      ...props
+    },
+    ref,
+  ) => {
+    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
 
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor={inputId}
+            className="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400"
+          >
             {label}
-            {required && <span className="text-danger-500 ml-0.5">*</span>}
+            {required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
-          className={[
-            'w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-colors',
-            error
-              ? 'border-danger-400 focus:ring-danger-400'
-              : 'border-gray-300 focus:ring-primary-500',
+          className={cn(
+            "w-full rounded border text-zinc-100 placeholder-zinc-500 shadow-sm focus:ring-2 focus:outline-none transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed",
+            variants[variant],
+            sizes[size],
+            error && "border-red-500 focus:border-red-500 focus:ring-red-500/50",
             className,
-          ].join(' ')}
+          )}
           {...props}
         />
-        {error && <p className="text-danger-500 text-xs mt-1">{error}</p>}
+        {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
       </div>
     );
-  }
+  },
 );
 
-Input.displayName = 'Input';
+Input.displayName = "Input";
 export default Input;

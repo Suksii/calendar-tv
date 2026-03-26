@@ -116,28 +116,20 @@ export default function ScheduleView({ isAdmin }: Props) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
         {/* Week navigation */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-          <Button
-            variant="secondary"
-            onClick={prevWeek}
-            aria-label="Prethodna sedmica"
-          >
+        <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800">
+          <Button variant="secondary" size="sm" onClick={prevWeek} aria-label="Prethodna sedmica">
             <MoveLeft size={14} />
           </Button>
-          <span className="text-sm font-medium text-gray-700">{weekLabel}</span>
-          <Button
-            variant="secondary"
-            onClick={nextWeek}
-            aria-label="Sljedeća sedmica"
-          >
+          <span className="text-sm font-medium text-zinc-300">{weekLabel}</span>
+          <Button variant="secondary" size="sm" onClick={nextWeek} aria-label="Sljedeća sedmica">
             <MoveRight size={14} />
           </Button>
         </div>
 
         {/* Day tabs */}
-        <div className="flex overflow-x-auto border-b border-gray-200 scrollbar-none">
+        <div className="flex overflow-x-auto border-b border-zinc-800 scrollbar-none">
           {days.map((day, i) => {
             const isSelected = format(day, "yyyy-MM-dd") === selectedDateStr;
             const todayDay = isToday(day);
@@ -145,12 +137,12 @@ export default function ScheduleView({ isAdmin }: Props) {
               <button
                 key={i}
                 onClick={() => setSelectedDay(day)}
-                className={`flex-1 min-w-20 py-3 text-center text-sm font-medium transition-colors border-r last:border-r-0 border-gray-200 shrink-0 ${
+                className={`flex-1 min-w-20 py-3 text-center text-sm font-medium transition-colors border-r last:border-r-0 border-zinc-800 shrink-0 ${
                   isSelected
-                    ? "bg-brand text-white"
+                    ? "bg-red-600 text-white"
                     : todayDay
-                      ? "bg-primary-50 text-primary-700 hover:bg-primary-100"
-                      : "text-gray-600 hover:bg-gray-50"
+                      ? "bg-red-950/40 text-red-400 hover:bg-red-950/60"
+                      : "text-zinc-400 hover:bg-zinc-800"
                 }`}
               >
                 <div className="text-xs uppercase tracking-wide opacity-80">
@@ -167,7 +159,7 @@ export default function ScheduleView({ isAdmin }: Props) {
         {/* Schedule list */}
         <div>
           {dayEntries.length === 0 ? (
-            <div className="py-12 text-center text-gray-400 text-sm">
+            <div className="py-12 text-center text-zinc-500 text-sm">
               Nema emisija za{" "}
               {format(selectedDay, "dd.MM.yyyy", { locale: hr })}.
               {isAdmin && (
@@ -176,7 +168,7 @@ export default function ScheduleView({ isAdmin }: Props) {
                     setEditingEntry(null);
                     setModalDate(selectedDateStr);
                   }}
-                  className="block mx-auto mt-3 text-primary-600 hover:text-primary-800 font-medium"
+                  className="block mx-auto mt-3 text-red-500 hover:text-red-400 font-medium transition-colors"
                 >
                   + Dodaj termin
                 </button>
@@ -191,23 +183,23 @@ export default function ScheduleView({ isAdmin }: Props) {
                     onClick={(e) => handleRowClick(entry, e)}
                     className={`cursor-pointer transition-colors ${
                       i % 2 === 0
-                        ? "bg-white hover:bg-blue-50"
-                        : "bg-gray-50 hover:bg-blue-50"
+                        ? "bg-zinc-900 hover:bg-zinc-800"
+                        : "bg-zinc-800/30 hover:bg-zinc-800"
                     }`}
                   >
-                    <td className="w-20 px-5 py-3 text-sm font-bold text-gray-800 tabular-nums">
+                    <td className="w-20 px-5 py-3 text-sm font-bold text-zinc-200 tabular-nums">
                       {entry.time}
                     </td>
-                    <td className="px-3 py-3 text-sm text-gray-800">
+                    <td className="px-3 py-3 text-sm text-zinc-200">
                       {entry.show_title}
                       {entry.type === "snimanje" && (
-                        <span className="ml-2 text-xs text-gray-400">
+                        <span className="ml-2 text-xs text-zinc-500">
                           snimanje
                         </span>
                       )}
                     </td>
                     {entry.duration && (
-                      <td className="px-5 py-3 text-xs text-gray-400 text-right tabular-nums whitespace-nowrap">
+                      <td className="px-5 py-3 text-xs text-zinc-500 text-right tabular-nums whitespace-nowrap">
                         {entry.duration} min
                       </td>
                     )}
@@ -220,13 +212,13 @@ export default function ScheduleView({ isAdmin }: Props) {
 
         {/* Admin — dodaj termin */}
         {isAdmin && dayEntries.length > 0 && (
-          <div className="px-5 py-3 border-t border-gray-100">
+          <div className="px-5 py-3 border-t border-zinc-800">
             <button
               onClick={() => {
                 setEditingEntry(null);
                 setModalDate(selectedDateStr);
               }}
-              className="text-sm text-primary-600 hover:text-primary-800 font-medium"
+              className="text-sm text-red-500 hover:text-red-400 font-medium transition-colors"
             >
               + Dodaj termin za {format(selectedDay, "dd.MM.", { locale: hr })}
             </button>
