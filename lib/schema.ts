@@ -2,6 +2,7 @@ import { pgTable, text, timestamp, pgEnum, integer } from 'drizzle-orm/pg-core';
 
 export const roleEnum = pgEnum('role', ['admin', 'viewer']);
 export const showTypeEnum = pgEnum('show_type', ['uzivo', 'snimanje']);
+export const channelEnum = pgEnum('channel', ['RTCG1', 'RTCG2', 'SAT', 'PAR']);
 
 export const users = pgTable('users', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
@@ -26,8 +27,10 @@ export const entries = pgTable('entries', {
   date: text('date').notNull(),        // YYYY-MM-DD
   time: text('time').notNull(),        // HH:MM
   duration: integer('duration'),       // trajanje u minutama, opciono
+  channel: channelEnum('channel').notNull().default('RTCG1'),
   type: showTypeEnum('type').notNull().default('uzivo'),
   host: text('host'),
+  topic: text('topic'),
   createdBy: text('created_by').references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

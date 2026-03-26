@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useId } from 'react';
+import { useEffect, useRef, useState, useId } from "react";
 
 export type SelectOption = {
   value: string;
@@ -23,7 +23,7 @@ export default function Select({
   value,
   onChange,
   label,
-  placeholder = '— odaberite —',
+  placeholder = "Odaberite emisiju",
   error,
   required,
   disabled,
@@ -38,26 +38,29 @@ export default function Select({
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (containerRef.current && !e.composedPath().includes(containerRef.current)) {
+      if (
+        containerRef.current &&
+        !e.composedPath().includes(containerRef.current)
+      ) {
         setOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
   useEffect(() => {
     if (open && focusedIndex >= 0 && listRef.current) {
       const item = listRef.current.children[focusedIndex] as HTMLElement;
-      item?.scrollIntoView({ block: 'nearest' });
+      item?.scrollIntoView({ block: "nearest" });
     }
   }, [focusedIndex, open]);
 
   function handleKeyDown(e: React.KeyboardEvent) {
     if (disabled) return;
     switch (e.key) {
-      case 'Enter':
-      case ' ':
+      case "Enter":
+      case " ":
         e.preventDefault();
         if (!open) {
           setOpen(true);
@@ -67,17 +70,21 @@ export default function Select({
           setOpen(false);
         }
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        if (!open) { setOpen(true); setFocusedIndex(0); break; }
+        if (!open) {
+          setOpen(true);
+          setFocusedIndex(0);
+          break;
+        }
         setFocusedIndex((i) => Math.min(i + 1, options.length - 1));
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
         setFocusedIndex((i) => Math.max(i - 1, 0));
         break;
-      case 'Escape':
-      case 'Tab':
+      case "Escape":
+      case "Tab":
         setOpen(false);
         break;
     }
@@ -112,25 +119,32 @@ export default function Select({
         onKeyDown={handleKeyDown}
         onClick={() => !disabled && setOpen((o) => !o)}
         className={[
-          'relative flex items-center justify-between px-4 py-2.5 text-sm rounded border cursor-pointer select-none transition-all duration-200',
+          "relative flex items-center justify-between px-4 py-2.5 text-sm rounded border cursor-pointer select-none transition-all duration-200",
           disabled
-            ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed border-zinc-800'
-            : 'bg-zinc-800/60',
+            ? "bg-zinc-900 text-zinc-600 cursor-not-allowed border-zinc-800"
+            : "bg-zinc-800/60",
           open
-            ? 'border-red-600 ring-2 ring-red-500'
+            ? "border-red-600 ring-2 ring-red-500"
             : error
-            ? 'border-red-500'
-            : 'border-zinc-600 hover:border-zinc-500',
-        ].join(' ')}
+              ? "border-red-500"
+              : "border-zinc-600 hover:border-zinc-500",
+        ].join(" ")}
       >
-        <span className={selected ? 'text-zinc-100' : 'text-zinc-500'}>
+        <span className={selected ? "text-zinc-100" : "text-zinc-500"}>
           {selected ? selected.label : placeholder}
         </span>
         <svg
-          className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-150 ${open ? 'rotate-180' : ''}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
 
         {/* Dropdown */}
@@ -150,17 +164,30 @@ export default function Select({
                   role="option"
                   aria-selected={isSelected}
                   onMouseEnter={() => setFocusedIndex(i)}
-                  onMouseDown={(e) => { e.preventDefault(); handleSelect(option.value); }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSelect(option.value);
+                  }}
                   className={[
-                    'flex items-center justify-between px-4 py-2 cursor-pointer text-sm transition-colors',
-                    isFocused ? 'bg-zinc-800 text-zinc-100' : 'text-zinc-300',
-                    isSelected && !isFocused ? 'bg-zinc-800/50' : '',
-                  ].join(' ')}
+                    "flex items-center justify-between px-4 py-2 cursor-pointer text-sm transition-colors",
+                    isFocused ? "bg-zinc-800 text-zinc-100" : "text-zinc-300",
+                    isSelected && !isFocused ? "bg-zinc-800/50" : "",
+                  ].join(" ")}
                 >
                   <span>{option.label}</span>
                   {isSelected && (
-                    <svg className="w-4 h-4 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-4 h-4 text-red-500 shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   )}
                 </li>

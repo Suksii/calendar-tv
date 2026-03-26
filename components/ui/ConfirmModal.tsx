@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import Button from './Button';
 
 type Props = {
@@ -34,8 +35,20 @@ export default function ConfirmModal({
   }, [onCancel]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-sm p-6">
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
+    >
+      <motion.div
+        className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-sm p-6"
+        initial={{ opacity: 0, scale: 0.95, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 8 }}
+        transition={{ duration: 0.18 }}
+      >
         <h2 className="font-semibold text-zinc-100 mb-2">{title}</h2>
         <p className="text-sm text-zinc-400 mb-6">{message}</p>
         <div className="flex gap-3 justify-end">
@@ -46,7 +59,7 @@ export default function ConfirmModal({
             {confirmLabel}
           </Button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

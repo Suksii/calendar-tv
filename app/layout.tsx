@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   title: "TV Kalendar",
@@ -15,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="cnr">
       <body className="min-h-full flex flex-col">
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
         <Toaster position="top-right" richColors />
       </body>
     </html>

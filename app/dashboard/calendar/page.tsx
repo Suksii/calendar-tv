@@ -1,15 +1,37 @@
 import { verifySession } from '@/lib/dal';
+import { format, startOfWeek, parseISO, isValid } from 'date-fns';
+import { getEntriesForMonth, getAllShows } from '@/lib/queries';
 import ScheduleView from '@/components/calendar/ScheduleView';
 
-export default async function CalendarPage() {
+type Props = {
+  searchParams: Promise<{ channel?: string; date?: string }>;
+};
+
+export default async function CalendarPage({ searchParams }: Props) {
   const session = await verifySession();
+  const { date } = await searchParams;
+
+  const parsedDate = date ? parseISO(date) : null;
+  const baseDate = parsedDate && isValid(parsedDate) ? parsedDate : new Date();
+  const weekStart = startOfWeek(baseDate, { weekStartsOn: 1 });
+  const initialMonth = format(weekStart, 'yyyy-MM');
+
+  const [initialEntries, initialShows] = await Promise.all([
+    getEntriesForMonth(initialMonth),
+    getAllShows(),
+  ]);
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold text-zinc-100">Raspored emisija</h1>
       </div>
-      <ScheduleView isAdmin={session.role === 'admin'} />
+      <ScheduleView
+        isAdmin={session.role === 'admin'}
+        initialEntries={initialEntries}
+        initialShows={initialShows}
+        initialMonth={initialMonth}
+      />
     </div>
   );
 }

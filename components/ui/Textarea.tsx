@@ -2,14 +2,14 @@ import { forwardRef } from "react";
 import { cn } from "@/lib/cn";
 
 type Variant = "default" | "filled";
-type InputSize = "sm" | "md" | "lg";
+type Size = "sm" | "md" | "lg";
 
-type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> & {
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label?: string;
   error?: string;
   required?: boolean;
   variant?: Variant;
-  size?: InputSize;
+  size?: Size;
 };
 
 const variants: Record<Variant, string> = {
@@ -17,22 +17,23 @@ const variants: Record<Variant, string> = {
   filled: "bg-zinc-800/60 border-zinc-700 focus:border-red-600 focus:ring-red-500",
 };
 
-const sizes: Record<InputSize, string> = {
+const sizes: Record<Size, string> = {
   sm: "px-3 py-2 text-xs",
   md: "px-4 py-2.5 text-sm",
   lg: "px-4 py-3 text-base",
 };
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
+const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
     {
       label,
       error,
       required,
       variant = "default",
-      size = "md" as InputSize,
+      size = "md",
       id,
       className,
+      rows = 3,
       ...props
     },
     ref,
@@ -50,11 +51,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
         )}
-        <input
+        <textarea
           ref={ref}
           id={inputId}
+          rows={rows}
           className={cn(
-            "w-full rounded border text-zinc-100 placeholder-zinc-500 shadow-sm focus:ring-2 focus:outline-none transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed",
+            "w-full rounded border text-zinc-100 placeholder-zinc-500 shadow-sm focus:ring-2 focus:outline-none transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed resize-none",
             variants[variant],
             sizes[size],
             error && "border-red-500 focus:border-red-500 focus:ring-red-500/50",
@@ -68,5 +70,5 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-Input.displayName = "Input";
-export default Input;
+Textarea.displayName = "Textarea";
+export default Textarea;

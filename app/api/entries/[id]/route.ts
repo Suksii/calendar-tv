@@ -32,16 +32,16 @@ export async function PUT(
   if (session.role !== 'admin') return NextResponse.json({ error: 'Zabranjen pristup.' }, { status: 403 });
 
   const { id } = await params;
-  const { showId, date, time, duration, type, host, guests: guestList } = await request.json();
+  const { showId, date, time, duration, channel, type, host, guests: guestList, topic } = await request.json();
 
-  if (!showId || !date || !time || !type) {
+  if (!showId || !date || !time || !type || !channel) {
     return NextResponse.json({ error: 'Nedostaju obavezna polja.' }, { status: 400 });
   }
 
   await sql`
     UPDATE entries
     SET show_id = ${showId}, date = ${date}, time = ${time}, duration = ${duration ?? null},
-        type = ${type}, host = ${host ?? null}, updated_at = NOW()
+        channel = ${channel}, type = ${type}, host = ${host ?? null}, topic = ${topic ?? null}, updated_at = NOW()
     WHERE id = ${id}
   `;
 

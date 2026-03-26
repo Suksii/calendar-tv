@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/session';
-import { sql } from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "@/lib/session";
+import { sql } from "@/lib/db";
 
-// GET /api/entries?month=YYYY-MM
 export async function GET(request: NextRequest) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: 'Neovlašćen pristup.' }, { status: 401 });
+  if (!session)
+    return NextResponse.json({ error: "Neovlašćen pristup." }, { status: 401 });
 
-  const month = request.nextUrl.searchParams.get('month');
+  const month = request.nextUrl.searchParams.get("month");
 
   const rows = month
     ? await sql`
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         FROM entries e
         JOIN shows s ON s.id = e.show_id
         LEFT JOIN guests g ON g.entry_id = e.id
-        WHERE e.date LIKE ${month + '-%'}
+        WHERE e.date LIKE ${month + "-%"}
         GROUP BY e.id, s.title
         ORDER BY e.date, e.time
       `
@@ -33,22 +33,36 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(rows);
 }
 
-// POST /api/entries
 export async function POST(request: NextRequest) {
   const session = await getSession();
-  if (!session) return NextResponse.json({ error: 'Neovlašćen pristup.' }, { status: 401 });
-  if (session.role !== 'admin') return NextResponse.json({ error: 'Zabranjen pristup.' }, { status: 403 });
+  if (!session)
+    return NextResponse.json({ error: "Neovlašćen pristup." }, { status: 401 });
+  if (session.role !== "admin")
+    return NextResponse.json({ error: "Zabranjen pristup." }, { status: 403 });
 
-  const { showId, date, time, duration, type, host, guests: guestList } = await request.json();
+  const {
+    showId,
+    date,
+    time,
+    duration,
+    channel,
+    type,
+    host,
+    guests: guestList,
+    topic,
+  } = await request.json();
 
-  if (!showId || !date || !time || !type) {
-    return NextResponse.json({ error: 'Nedostaju obavezna polja.' }, { status: 400 });
+  if (!showId || !date || !time || !type || !channel) {
+    return NextResponse.json(
+      { error: "Nedostaju obavezna polja." },
+      { status: 400 },
+    );
   }
 
   const id = crypto.randomUUID();
   await sql`
-    INSERT INTO entries (id, show_id, date, time, duration, type, host, created_by)
-    VALUES (${id}, ${showId}, ${date}, ${time}, ${duration ?? null}, ${type}, ${host ?? null}, ${session.userId})
+    INSERT INTO entries (id, show_id, date, time, duration, channel, type, host, topic, created_by)
+    VALUES (${id}, ${showId}, ${date}, ${time}, ${duration ?? null}, ${channel}, ${type}, ${host ?? null}, ${topic ?? null}, ${session.userId})
   `;
 
   if (Array.isArray(guestList)) {
