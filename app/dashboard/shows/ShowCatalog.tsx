@@ -33,7 +33,7 @@ export default function ShowCatalog({
         [...prev, show].sort((a, b) => a.title.localeCompare(b.title)),
       );
       setNewTitle("");
-      toast.success(`Emisija "${show.title}" dodana u katalog.`);
+      toast.success(`Emisija "${show.title}" dodata u katalog.`);
     } catch (err) {
       toast.error(
         err instanceof Error ? err.message : "Greška pri dodavanju emisije.",

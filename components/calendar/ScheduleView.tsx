@@ -70,10 +70,18 @@ export default function ScheduleView({
   initialShows,
   initialMonth,
 }: Props) {
-  const [{ date: dateStr, channel }, setParams] = useQueryStates({
-    date: parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
-    channel: parseAsStringLiteral(["RTCG1", "RTCG2", "SAT", "PAR"] as const).withDefault("RTCG1"),
-  }, { shallow: false });
+  const [{ date: dateStr, channel }, setParams] = useQueryStates(
+    {
+      date: parseAsString.withDefault(format(new Date(), "yyyy-MM-dd")),
+      channel: parseAsStringLiteral([
+        "RTCG1",
+        "RTCG2",
+        "SAT",
+        "PAR",
+      ] as const).withDefault("RTCG1"),
+    },
+    { shallow: false },
+  );
 
   // Koristimo T00:00:00 da spriječimo UTC timezone pomak
   const selectedDay = new Date(dateStr + "T00:00:00");
@@ -169,6 +177,11 @@ export default function ScheduleView({
 
   return (
     <>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-bold text-zinc-100">
+          Raspored emisija - {channel}
+        </h1>
+      </div>
       <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
         {/* Channel tabs */}
         <div className="flex border-b border-zinc-800">
@@ -241,7 +254,9 @@ export default function ScheduleView({
                 return (
                   <motion.button
                     key={i}
-                    onClick={() => setParams({ date: format(day, "yyyy-MM-dd") })}
+                    onClick={() =>
+                      setParams({ date: format(day, "yyyy-MM-dd") })
+                    }
                     whileTap={{ scale: 0.95 }}
                     className={`flex-1 min-w-20 py-3 text-center text-sm font-medium transition-colors border-r last:border-r-0 border-zinc-800 shrink-0 ${
                       isSelected
@@ -309,7 +324,7 @@ export default function ScheduleView({
                       <td className="w-20 px-5 py-3 text-sm font-bold text-zinc-200 tabular-nums">
                         {entry.time}
                       </td>
-                      <td className="px-3 py-3 text-sm text-zinc-200">
+                      <td className="px-3 py-3 text-sm text-zinc-200 w-full">
                         {entry.show_title}
                         {entry.type === "snimanje" && (
                           <span className="ml-2 text-xs text-zinc-500">
