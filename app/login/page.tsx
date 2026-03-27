@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,14 +18,14 @@ export default function LoginPage() {
     setLoading(true);
 
     const form = e.currentTarget;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const username = (form.elements.namedItem("username") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement)
       .value;
 
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
 
     if (res.ok) {
@@ -55,18 +57,31 @@ export default function LoginPage() {
             <div className="px-8 pb-10">
               <form onSubmit={handleSubmit} className="space-y-4">
                 <Input
-                  label="Email"
-                  name="email"
-                  type="email"
+                  label="Korisničko ime"
+                  name="username"
+                  type="text"
                   required
-                  autoComplete="email"
+                  autoComplete="username"
+                  placeholder="ime.prezime"
                 />
                 <Input
                   label="Lozinka"
                   name="password"
-                  type="password"
+                  type={passwordVisible ? "text" : "password"}
                   required
                   autoComplete="current-password"
+                  icon={
+                    <div
+                      onClick={() => setPasswordVisible((prev) => !prev)}
+                      className="absolute top-1/2 -translate-y-1/2 right-4 text-zinc-400 cursor-pointer"
+                    >
+                      {passwordVisible ? (
+                        <EyeOff size={18} />
+                      ) : (
+                        <Eye size={18} />
+                      )}
+                    </div>
+                  }
                 />
 
                 {error && <p className="text-sm text-danger-600">{error}</p>}

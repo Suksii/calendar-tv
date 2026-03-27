@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { sql } from "@/lib/db";
+import { writeLog } from "@/lib/log";
 
 export async function GET(request: NextRequest) {
   const session = await getSession();
@@ -73,6 +74,9 @@ export async function POST(request: NextRequest) {
       }
     }
   }
+
+  const [show] = (await sql`SELECT title FROM shows WHERE id = ${showId}`) as { title: string }[];
+  await writeLog(session.userId, `Dodan termin "${show?.title ?? showId}" — ${date} ${time} (${channel})`);
 
   return NextResponse.json({ id }, { status: 201 });
 }

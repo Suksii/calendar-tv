@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 type Variant = "default" | "filled";
@@ -10,11 +10,14 @@ type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> & {
   required?: boolean;
   variant?: Variant;
   size?: InputSize;
+  icon?: ReactNode;
 };
 
 const variants: Record<Variant, string> = {
-  default: "bg-transparent border-zinc-600 focus:border-red-600 focus:ring-red-500",
-  filled: "bg-zinc-800/60 border-zinc-700 focus:border-red-600 focus:ring-red-500",
+  default:
+    "bg-transparent border-zinc-600 focus:border-red-600 focus:ring-red-500",
+  filled:
+    "bg-zinc-800/60 border-zinc-700 focus:border-red-600 focus:ring-red-500",
 };
 
 const sizes: Record<InputSize, string> = {
@@ -33,6 +36,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       size = "md" as InputSize,
       id,
       className,
+      icon,
       ...props
     },
     ref,
@@ -50,18 +54,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {required && <span className="text-red-500 ml-0.5">*</span>}
           </label>
         )}
-        <input
-          ref={ref}
-          id={inputId}
-          className={cn(
-            "w-full rounded border text-zinc-100 placeholder-zinc-500 shadow-sm focus:ring-2 focus:outline-none transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed",
-            variants[variant],
-            sizes[size],
-            error && "border-red-500 focus:border-red-500 focus:ring-red-500/50",
-            className,
-          )}
-          {...props}
-        />
+        <div className="relative">
+          <input
+            ref={ref}
+            id={inputId}
+            className={cn(
+              "w-full rounded border text-zinc-100 placeholder-zinc-500 shadow-sm focus:ring-2 focus:outline-none transition-all duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed",
+              variants[variant],
+              sizes[size],
+              error &&
+                "border-red-500 focus:border-red-500 focus:ring-red-500/50",
+              className,
+            )}
+            {...props}
+          />
+          {icon && icon}
+        </div>
         {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
       </div>
     );

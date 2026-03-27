@@ -7,6 +7,7 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import { createUser } from "@/lib/actions";
+import { Eye, EyeOff } from "lucide-react";
 
 const roleOptions = [
   { value: "viewer", label: "Korisnik" },
@@ -17,6 +18,7 @@ export default function NewUserPage() {
   const router = useRouter();
   const [role, setRole] = useState("viewer");
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,13 +26,13 @@ export default function NewUserPage() {
 
     const form = e.currentTarget;
     const name = (form.elements.namedItem("name") as HTMLInputElement).value;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const username = (form.elements.namedItem("username") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement)
       .value;
 
     const result = await createUser({
       name,
-      email,
+      username,
       password,
       role: role as "admin" | "viewer",
     });
@@ -50,13 +52,21 @@ export default function NewUserPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4 max-w-sm">
         <Input label="Ime i prezime" name="name" required />
-        <Input label="Email" name="email" type="email" required />
+        <Input label="Korisničko ime" name="username" type="text" required placeholder="ime.prezime" />
         <Input
           label="Lozinka"
           name="password"
-          type="password"
+          type={passwordVisible ? "text" : "password"}
           required
           minLength={6}
+          icon={
+            <div
+              onClick={() => setPasswordVisible((prev) => !prev)}
+              className="absolute top-1/2 -translate-y-1/2 right-4 text-zinc-400 cursor-pointer"
+            >
+              {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+            </div>
+          }
         />
         <Select
           label="Rola"

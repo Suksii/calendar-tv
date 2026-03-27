@@ -8,7 +8,7 @@ const LIMITS = { admin: 2, viewer: 4 };
 type User = {
   id: string;
   name: string;
-  email: string;
+  username: string;
   role: "admin" | "viewer";
   created_at: string;
 };
@@ -16,7 +16,7 @@ type User = {
 export default async function UsersPage() {
   const session = await requireAdmin();
   const users = (await sql`
-    SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC
+    SELECT id, name, username, role, created_at FROM users ORDER BY created_at DESC
   `) as User[];
 
   const adminCount = users.filter((u) => u.role === "admin").length;
@@ -29,7 +29,7 @@ export default async function UsersPage() {
         <div>
           <h1 className="text-xl font-bold text-zinc-100">Korisnici</h1>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Administratori: {adminCount}/{LIMITS.admin} · Preglednici:{" "}
+            Administratori: {adminCount}/{LIMITS.admin} · Korisnici:{" "}
             {viewerCount}/{LIMITS.viewer}
           </p>
         </div>
@@ -55,7 +55,7 @@ export default async function UsersPage() {
                 Ime
               </th>
               <th className="text-left px-4 py-3 font-medium text-zinc-400">
-                Email
+                Korisničko ime
               </th>
               <th className="text-left px-4 py-3 font-medium text-zinc-400">
                 Rola
@@ -72,7 +72,7 @@ export default async function UsersPage() {
                 <td className="px-4 py-3 font-medium text-zinc-100">
                   {user.name}
                 </td>
-                <td className="px-4 py-3 text-zinc-400">{user.email}</td>
+                <td className="px-4 py-3 text-zinc-400">{user.username}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full font-medium ${

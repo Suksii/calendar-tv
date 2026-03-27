@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
 import { sql } from '@/lib/db';
+import { writeLog } from '@/lib/log';
 
 export async function GET(
   _request: NextRequest,
@@ -55,6 +56,9 @@ export async function PUT(
     }
   }
 
+  const [show] = (await sql`SELECT title FROM shows WHERE id = ${showId}`) as { title: string }[];
+  await writeLog(session.userId, `Ažuriran termin "${show?.title ?? showId}" — ${date} ${time} (${channel})`);
+
   return NextResponse.json({ ok: true });
 }
 
@@ -67,6 +71,15 @@ export async function DELETE(
   if (session.role !== 'admin') return NextResponse.json({ error: 'Zabranjen pristup.' }, { status: 403 });
 
   const { id } = await params;
+  const [entry] = (await sql`
+    SELECT s.title, e.date, e.time, e.channel
+    FROM entries e JOIN shows s ON s.id = e.show_id
+    WHERE e.id = ${id}
+  `) as { title: string; date: string; time: string; channel: string }[];
+
   await sql`DELETE FROM entries WHERE id = ${id}`;
+
+  await writeLog(session.userId, `Obrisan termin "${entry?.title ?? id}" — ${entry?.date} ${entry?.time} (${entry?.channel})`);
+
   return NextResponse.json({ ok: true });
 }

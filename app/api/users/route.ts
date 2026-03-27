@@ -11,7 +11,7 @@ export async function GET() {
     return NextResponse.json({ error: "Zabranjen pristup." }, { status: 403 });
 
   const rows = await sql`
-    SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC
+    SELECT id, name, username, role, created_at FROM users ORDER BY created_at DESC
   `;
   return NextResponse.json(rows);
 }
@@ -23,20 +23,20 @@ export async function POST(request: NextRequest) {
   if (session.role !== "admin")
     return NextResponse.json({ error: "Zabranjen pristup." }, { status: 403 });
 
-  const { name, email, password, role } = await request.json();
+  const { name, username, password, role } = await request.json();
 
-  if (!name || !email || !password) {
+  if (!name || !username || !password) {
     return NextResponse.json(
-      { error: "Ime, email i lozinka su obavezni." },
+      { error: "Ime, korisničko ime i lozinka su obavezni." },
       { status: 400 },
     );
   }
 
   const existing =
-    await sql`SELECT id FROM users WHERE email = ${email} LIMIT 1`;
+    await sql`SELECT id FROM users WHERE username = ${username} LIMIT 1`;
   if (existing.length > 0) {
     return NextResponse.json(
-      { error: "Korisnik s tim emailom već postoji." },
+      { error: "Korisnik s tim korisničkim imenom već postoji." },
       { status: 409 },
     );
   }
@@ -62,8 +62,8 @@ export async function POST(request: NextRequest) {
   const userId = crypto.randomUUID();
 
   await sql`
-    INSERT INTO users (id, name, email, password_hash, role)
-    VALUES (${userId}, ${name}, ${email}, ${passwordHash}, ${role ?? "viewer"})
+    INSERT INTO users (id, name, username, password_hash, role)
+    VALUES (${userId}, ${name}, ${username}, ${passwordHash}, ${role ?? "viewer"})
   `;
 
   return NextResponse.json({ id: userId }, { status: 201 });

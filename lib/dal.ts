@@ -7,7 +7,7 @@ import { sql } from './db';
 export type UserProfile = {
   id: string;
   name: string;
-  email: string;
+  username: string;
   role: 'admin' | 'viewer';
 };
 
@@ -21,7 +21,7 @@ export const getUser = cache(async (): Promise<UserProfile | null> => {
   const session = await getSession();
   if (!session) return null;
   const rows = (await sql`
-    SELECT id, name, email, role
+    SELECT id, name, username, role
     FROM users
     WHERE id = ${session.userId}
     LIMIT 1

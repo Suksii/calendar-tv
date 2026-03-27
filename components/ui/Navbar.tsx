@@ -25,7 +25,10 @@ export default function Navbar({ userName, role }: NavbarProps) {
     { href: "/dashboard/calendar", label: "Kalendar" },
     { href: "/dashboard/shows", label: "Emisije" },
     ...(role === "admin"
-      ? [{ href: "/dashboard/users", label: "Korisnici" }]
+      ? [
+          { href: "/dashboard/users", label: "Korisnici" },
+          { href: "/dashboard/logs", label: "Logovi" },
+        ]
       : []),
   ];
 
