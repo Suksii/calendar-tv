@@ -9,9 +9,10 @@ import { LogOut } from "lucide-react";
 type NavbarProps = {
   userName: string;
   role: "admin" | "viewer";
+  isSeedAdmin?: boolean;
 };
 
-export default function Navbar({ userName, role }: NavbarProps) {
+export default function Navbar({ userName, role, isSeedAdmin }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,7 +28,7 @@ export default function Navbar({ userName, role }: NavbarProps) {
     ...(role === "admin"
       ? [
           { href: "/dashboard/users", label: "Korisnici" },
-          { href: "/dashboard/logs", label: "Logovi" },
+          ...(isSeedAdmin ? [{ href: "/dashboard/logs", label: "Logovi" }] : []),
         ]
       : []),
   ];

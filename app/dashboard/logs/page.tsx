@@ -1,5 +1,6 @@
-import { requireAdmin } from "@/lib/dal";
+import { requireAdmin, getUser } from "@/lib/dal";
 import { sql } from "@/lib/db";
+import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { bs } from "date-fns/locale";
 
@@ -12,6 +13,8 @@ type LogEntry = {
 
 export default async function LogsPage() {
   await requireAdmin();
+  const user = await getUser();
+  if (user?.username !== process.env.SEED_ADMIN_USERNAME) redirect("/dashboard/calendar");
 
   const logs = (await sql`
     SELECT id, user_name, action, created_at
