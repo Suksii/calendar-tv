@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { sql } from "@/lib/db";
 import { writeLog } from "@/lib/log";
+import { findConflict } from "@/lib/entries";
 
 export async function GET(request: NextRequest) {
   const session = await getSession();
@@ -38,9 +39,6 @@ export async function POST(request: NextRequest) {
   const session = await getSession();
   if (!session)
     return NextResponse.json({ error: "Neovlašćen pristup." }, { status: 401 });
-  if (session.role !== "admin")
-    return NextResponse.json({ error: "Zabranjen pristup." }, { status: 403 });
-
   const {
     showId,
     date,
@@ -54,9 +52,23 @@ export async function POST(request: NextRequest) {
   } = await request.json();
 
   if (!showId || !date || !time || !type || !channel) {
+    return NextResponse.json({ error: "Nedostaju obavezna polja." }, { status: 400 });
+  }
+
+  if (session.role !== "admin") {
+    const assigned = (await sql`
+      SELECT 1 FROM user_shows WHERE user_id = ${session.userId} AND show_id = ${showId}
+    `);
+    if (assigned.length === 0) {
+      return NextResponse.json({ error: "Zabranjen pristup." }, { status: 403 });
+    }
+  }
+
+  const conflict = await findConflict(date, time, duration ?? null, channel);
+  if (conflict) {
     return NextResponse.json(
-      { error: "Nedostaju obavezna polja." },
-      { status: 400 },
+      { error: `Konflikt: "${conflict.show_title}" već zauzima ovaj termin u ${conflict.time} (${channel}).` },
+      { status: 409 },
     );
   }
 

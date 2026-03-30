@@ -17,3 +17,10 @@ export async function getEntriesForMonth(month: string): Promise<Entry[]> {
 export async function getAllShows(): Promise<Show[]> {
   return sql`SELECT id, title FROM shows ORDER BY title ASC` as unknown as Promise<Show[]>;
 }
+
+export async function getAssignedShowIds(userId: string): Promise<string[]> {
+  const rows = (await sql`
+    SELECT show_id FROM user_shows WHERE user_id = ${userId}
+  `) as { show_id: string }[];
+  return rows.map((r) => r.show_id);
+}

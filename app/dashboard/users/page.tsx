@@ -85,9 +85,19 @@ export default async function UsersPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {user.id !== session.userId && (
-                    <DeleteUserButton userId={user.id} />
-                  )}
+                  <div className="flex items-center gap-3 justify-end">
+                    {user.role === "viewer" && (
+                      <Link
+                        href={`/dashboard/users/${user.id}/shows`}
+                        className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+                      >
+                        Emisije
+                      </Link>
+                    )}
+                    {user.id !== session.userId && (
+                      <DeleteUserButton userId={user.id} />
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

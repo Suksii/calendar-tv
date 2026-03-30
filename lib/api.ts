@@ -60,3 +60,17 @@ export const updateEntry = (id: string, payload: EntryPayload) =>
 
 export const deleteEntry = (id: string) =>
   apiFetch<void>(`/api/entries/${id}`, { method: "DELETE" });
+
+export type BatchResult = {
+  created: number;
+  conflicts: { date: string; conflictWith: string }[];
+};
+
+export const createBatchEntries = (
+  payload: Omit<EntryPayload, "date"> & { dates: string[] }
+) =>
+  apiFetch<BatchResult>("/api/entries/batch", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });

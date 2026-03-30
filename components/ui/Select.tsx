@@ -153,7 +153,7 @@ export default function Select({
             ref={listRef}
             role="listbox"
             aria-labelledby={label ? `${id}-label` : undefined}
-            className="absolute z-50 left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl max-h-60 overflow-y-auto py-1"
+            className="absolute z-50 left-0 right-0 top-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl max-h-60 scrollable py-1"
           >
             {options.map((option, i) => {
               const isSelected = option.value === value;

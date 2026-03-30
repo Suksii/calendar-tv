@@ -15,12 +15,14 @@ import Button from "@/components/ui/Button";
 import {
   createEntry,
   updateEntry,
+  createBatchEntries,
   type Show,
   type Entry,
   type EntryPayload,
   type Channel,
 } from "@/lib/api";
 import { addShow } from "@/lib/actions";
+import DateMultiPicker from "./DateMultiPicker";
 
 const schema = z.object({
   showId: z.string().min(1, "Odaberite emisiju"),
@@ -41,6 +43,7 @@ type Props = {
   entry?: Entry | null;
   defaultChannel?: Channel;
   shows: Show[];
+  allowedShowIds: string[] | null;
   onClose: () => void;
   onSaved: () => void;
 };
@@ -50,11 +53,16 @@ export default function EntryModal({
   entry,
   defaultChannel = "RTCG1",
   shows,
+  allowedShowIds,
   onClose,
   onSaved,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringDates, setRecurringDates] = useState<Set<string>>(
+    () => new Set([date])
+  );
 
   const {
     register,
@@ -107,24 +115,47 @@ export default function EntryModal({
       }
     }
 
-    const payload: EntryPayload = {
-      showId,
-      date,
-      time: data.time,
-      duration: data.duration ? parseInt(data.duration, 10) || null : null,
-      channel: data.channel,
-      type: data.type,
-      host: data.host || null,
-      guests: data.guests.filter((g) => g.name.trim()),
-      topic: data.topic || null,
-    };
+    const dur = data.duration ? parseInt(data.duration, 10) || null : null;
+    const guests = data.guests.filter((g) => g.name.trim());
 
     try {
       if (entry) {
-        await updateEntry(entry.id, payload);
+        await updateEntry(entry.id, {
+          showId, date, time: data.time, duration: dur,
+          channel: data.channel, type: data.type,
+          host: data.host || null, guests, topic: data.topic || null,
+        });
         toast.success("Termin je ažuriran.");
+        onSaved();
+        onClose();
+        return;
+      }
+
+      if (isRecurring && recurringDates.size > 1) {
+        const result = await createBatchEntries({
+          showId,
+          dates: Array.from(recurringDates),
+          time: data.time,
+          duration: dur,
+          channel: data.channel,
+          type: data.type,
+          host: data.host || null,
+          guests,
+          topic: data.topic || null,
+        });
+        if (result.created > 0) {
+          toast.success(`Kreirano ${result.created} termina.`);
+        }
+        if (result.conflicts.length > 0) {
+          const dates = result.conflicts.map((c) => c.date).join(", ");
+          toast.warning(`Konflikti preskočeni: ${dates}`);
+        }
       } else {
-        await createEntry(payload);
+        await createEntry({
+          showId, date, time: data.time, duration: dur,
+          channel: data.channel, type: data.type,
+          host: data.host || null, guests, topic: data.topic || null,
+        });
         toast.success("Termin je dodan.");
       }
       onSaved();
@@ -136,9 +167,13 @@ export default function EntryModal({
 
   const selectedShowId = watch("showId");
 
+  const visibleShows = allowedShowIds === null
+    ? shows
+    : shows.filter((s) => allowedShowIds.includes(s.id));
+
   const showOptions: SelectOption[] = [
-    ...shows.map((s) => ({ value: s.id, label: s.title })),
-    { value: "__new__", label: "Dodajte novu emisiju..." },
+    ...visibleShows.map((s) => ({ value: s.id, label: s.title })),
+    ...(allowedShowIds === null ? [{ value: "__new__", label: "Dodajte novu emisiju..." }] : []),
   ];
 
   const channelOptions: SelectOption[] = [
@@ -163,7 +198,7 @@ export default function EntryModal({
     >
       <motion.div
         ref={ref}
-        className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 max-h-[90vh] overflow-y-auto"
+        className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 max-h-[90vh] scrollable"
         initial={{ opacity: 0, scale: 0.95, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 12 }}
@@ -306,9 +341,37 @@ export default function EntryModal({
             </div>
           </div>
 
+          {!entry && (
+            <div className="border-t border-zinc-800 pt-4 space-y-3">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isRecurring}
+                  onChange={(e) => setIsRecurring(e.target.checked)}
+                  className="accent-red-600 w-4 h-4"
+                />
+                <span className="text-sm font-medium text-zinc-300">Ponavljajući termin</span>
+              </label>
+
+              {isRecurring && (
+                <DateMultiPicker
+                  initialDate={date}
+                  selected={recurringDates}
+                  onChange={setRecurringDates}
+                />
+              )}
+            </div>
+          )}
+
           <div className="flex gap-3 pt-2">
             <Button type="submit" loading={isSubmitting} className="flex-1">
-              {isSubmitting ? "Čuvanje..." : entry ? "Sačuvaj" : "Dodaj termin"}
+              {isSubmitting
+                ? "Čuvanje..."
+                : entry
+                  ? "Sačuvaj"
+                  : isRecurring && recurringDates.size > 1
+                    ? `Dodaj ${recurringDates.size} termina`
+                    : "Dodaj termin"}
             </Button>
             <Button type="button" variant="secondary" onClick={onClose}>
               Otkaži

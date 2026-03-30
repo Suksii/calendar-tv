@@ -20,7 +20,7 @@ type Entry = {
 type Props = {
   entry: Entry;
   position: { x: number; y: number };
-  isAdmin: boolean;
+  canEdit: boolean;
   onClose: () => void;
   onEdit: () => void;
   onDelete: (id: string) => void;
@@ -37,7 +37,7 @@ function Label({ children }: { children: React.ReactNode }) {
 export default function ShowPopover({
   entry,
   position,
-  isAdmin,
+  canEdit,
   onClose,
   onEdit,
   onDelete,
@@ -150,7 +150,7 @@ export default function ShowPopover({
         )}
       </div>
 
-      {isAdmin && (
+      {canEdit && (
         <div className="flex gap-2 pt-3 border-t border-zinc-800">
           <button
             onClick={onEdit}

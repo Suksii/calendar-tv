@@ -26,6 +26,7 @@ import {
   type Entry,
   type Channel,
 } from "@/lib/api";
+import Link from "next/link";
 
 const CHANNELS: { value: Channel; label: string }[] = [
   { value: "RTCG1", label: "RTCG1" },
@@ -36,6 +37,7 @@ const CHANNELS: { value: Channel; label: string }[] = [
 
 type Props = {
   isAdmin: boolean;
+  allowedShowIds: string[] | null;
   initialEntries: Entry[];
   initialShows: Show[];
   initialMonth: string;
@@ -66,6 +68,7 @@ const rowVariants = {
 
 export default function ScheduleView({
   isAdmin,
+  allowedShowIds,
   initialEntries,
   initialShows,
   initialMonth,
@@ -104,7 +107,11 @@ export default function ScheduleView({
 
   const fetchEntries = useCallback(async (m: string) => {
     try {
-      setEntries(await getEntries(m));
+      const newEntries = await getEntries(m);
+      setEntries((prev) => [
+        ...prev.filter((e) => !e.date.startsWith(m)),
+        ...newEntries,
+      ]);
     } catch {
       toast.error("Greška pri učitavanju termina.");
     }
@@ -173,6 +180,12 @@ export default function ScheduleView({
     }
   }
 
+  const canAddEntry = isAdmin || (allowedShowIds !== null && allowedShowIds.length > 0);
+
+  function canEditEntry(entry: Entry) {
+    return isAdmin || (allowedShowIds !== null && allowedShowIds.includes(entry.show_id));
+  }
+
   const weekLabel = `${format(weekStart, "dd.MM")} – ${format(addDays(weekStart, 6), "dd.MM.yyyy")}`;
 
   return (
@@ -181,6 +194,13 @@ export default function ScheduleView({
         <h1 className="text-xl font-bold text-zinc-100">
           Raspored emisija - {channel}
         </h1>
+        <Link
+          href={`/print?date=${selectedDateStr}`}
+          target="_blank"
+          className="text-xs text-zinc-400 hover:text-zinc-200 border border-zinc-700 hover:border-zinc-500 px-3 py-1.5 rounded transition-colors"
+        >
+          Štampaj dan
+        </Link>
       </div>
       <div className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
         {/* Channel tabs */}
@@ -293,7 +313,7 @@ export default function ScheduleView({
               <div className="py-12 text-center text-zinc-500 text-sm">
                 Nema emisija za{" "}
                 {format(selectedDay, "dd.MM.yyyy", { locale: hr })}.
-                {isAdmin && (
+                {canAddEntry && (
                   <button
                     onClick={() => {
                       setEditingEntry(null);
@@ -345,8 +365,8 @@ export default function ScheduleView({
           </motion.div>
         </AnimatePresence>
 
-        {/* Admin — dodaj termin */}
-        {isAdmin && dayEntries.length > 0 && (
+        {/* Dodaj termin */}
+        {canAddEntry && dayEntries.length > 0 && (
           <div className="px-5 py-3 border-t border-zinc-800">
             <button
               onClick={() => {
@@ -367,7 +387,7 @@ export default function ScheduleView({
           <ShowPopover
             entry={popoverEntry}
             position={popoverPos}
-            isAdmin={isAdmin}
+            canEdit={canEditEntry(popoverEntry)}
             onClose={() => setPopoverEntry(null)}
             onEdit={() => handleEdit(popoverEntry)}
             onDelete={handleDelete}
@@ -383,6 +403,7 @@ export default function ScheduleView({
             entry={editingEntry}
             defaultChannel={channel}
             shows={shows}
+            allowedShowIds={allowedShowIds}
             onClose={() => {
               setModalDate(null);
               setEditingEntry(null);
