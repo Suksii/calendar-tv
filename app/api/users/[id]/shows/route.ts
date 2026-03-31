@@ -11,8 +11,8 @@ export async function GET(
   if (session.role !== 'admin') return NextResponse.json({ error: 'Zabranjen pristup.' }, { status: 403 });
 
   const { id } = await params;
-  const rows = await sql`SELECT show_id FROM user_shows WHERE user_id = ${id}`;
-  return NextResponse.json(rows.map((r: { show_id: string }) => r.show_id));
+  const rows = (await sql`SELECT show_id FROM user_shows WHERE user_id = ${id}`) as { show_id: string }[];
+  return NextResponse.json(rows.map((r) => r.show_id));
 }
 
 export async function PUT(
